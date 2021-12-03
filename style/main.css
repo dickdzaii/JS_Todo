@@ -1,0 +1,25 @@
+.font-weight-bold {
+    font-weight: bold;
+}
+
+input,
+select,
+textarea:active {
+    outline: 0px !important;
+}
+
+.low-task {
+    background-color: #68d9ed;
+}
+
+.normal-task {
+    background-color: #e4d500;
+}
+
+.high-task {
+    background-color: #ff3333;
+}
+
+.success-task {
+    background-color: #22e300 !important;
+}
