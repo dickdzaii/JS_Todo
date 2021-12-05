@@ -1,11 +1,29 @@
 .font-weight-bold {
-    font-weight: bold;
+    font-weight: 500;
 }
 
 input,
 select,
 textarea:active {
     outline: 0px !important;
+}
+
+.task-name {
+    word-break: break-all!important;
+}
+
+input[type="checkbox"] {
+    -ms-transform: scale(2);
+    /* IE */
+    -moz-transform: scale(2);
+    /* FF */
+    -webkit-transform: scale(2);
+    /* Safari and Chrome */
+    -o-transform: scale(2);
+    /* Opera */
+    transform: scale(2);
+    padding: 10px;
+    margin: 0 10px;
 }
 
 .low-task {
@@ -22,4 +40,8 @@ textarea:active {
 
 .success-task {
     background-color: #22e300 !important;
+}
+
+.hidden {
+    display: none !important;
 }
