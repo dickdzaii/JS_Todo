@@ -70,7 +70,7 @@ function LoadPage(pageName, ...params) {
 
                             dueDateField.setAttribute("readonly", true);
 
-                            priorityField.setAttribute("readonly", true);
+                            priorityField.setAttribute("disabled", true);
                         }
                     } else throw new Error('Task not found');
                 } else {
@@ -80,10 +80,17 @@ function LoadPage(pageName, ...params) {
 
                 function addOrUpdateTask() {
                     if (nameField.value) {
-                        let newTask = new Todo(nameField.value, descriptionField.value, dueDateField.value, priorityField.value)
                         if (params.length > 0) {
-                            listTasks.updateItem(params[0], newTask);
+                            let task = listTasks.findItemById(params[0]);
+                            if (!task.isDone) {
+                                task.name = nameField.value;
+                                task.description = descriptionField.value;
+                                task.dueDate = dueDateField.value;
+                                task.priority = priorityField.value;
+                                listTasks.updateItem(params[0], task);
+                            }
                         } else {
+                            let newTask = new Todo(nameField.value, descriptionField.value, dueDateField.value, priorityField.value)
                             listTasks.addNewItem(newTask)
                         };
                         LoadPage(myTask);
@@ -109,7 +116,7 @@ function LoadPage(pageName, ...params) {
                 </div>
                 <div id="bulk-area" class="mx-2 hidden">
                 <button type="button" id="change-status-selected" class="btn btn-success">Done/Undone</button>
-                <button type="button" class="btn btn-danger">Remove</button>
+                <button type="button" id="delete-selected" class="btn btn-danger">Remove</button>
                 </div>
                 </div>
                 ` + (listTasks.list.length > 0 ?
@@ -132,7 +139,8 @@ function LoadPage(pageName, ...params) {
                 const doneButtons = document.querySelectorAll(".task-success");
                 const bulkArea = document.getElementById("bulk-area");
                 const doneButton = document.getElementById("change-status-selected");
-                const checkAllBox = document.getElementById('check-all')
+                const deleteButton = document.getElementById("delete-selected");
+                const checkAllBox = document.getElementById('check-all');
                 checkAllBox.addEventListener("click", function() {
                     let allChecked = true;
                     for (const i of taskCheckbox) {
@@ -172,7 +180,7 @@ function LoadPage(pageName, ...params) {
                 }
 
                 doneButton.addEventListener("click", function() {
-                    if (confirm("Are you sure you want to done/undone these selected tasks")) {
+                    if (confirm("Are you sure you want to done/undone these selected tasks?")) {
                         let listSelected = [];
                         for (const i of taskCheckbox) {
                             if (i.checked)
@@ -180,6 +188,17 @@ function LoadPage(pageName, ...params) {
                         }
                         let rs = changeStatus(listSelected);
                         rs ? LoadPage(currentPage) : console.error("Couldn't change tasks's status");
+                    }
+                })
+
+                deleteButton.addEventListener("click", function() {
+                    if (confirm("Are you sure you want to delete these selected tasks?")) {
+                        let listSelected = [];
+                        for (const i of taskCheckbox) {
+                            if (i.checked)
+                                listSelected.push(i.id.split('-')[1]);
+                        }
+                        deleteTasks(listSelected);
                     }
                 })
 
@@ -202,6 +221,20 @@ function LoadPage(pageName, ...params) {
                             LoadPage(currentPage);
                         }
                     } else throw new Error('Task not found');
+                }
+
+                function deleteTasks(tasks) {
+                    let rs = false;
+                    for (const itask of tasks) {
+                        let task = listTasks.findItemById(itask);
+                        if (task) {
+                            task.isDone = !task.isDone;
+                            listTasks.deleteItem(itask);
+                        }
+
+                        rs = true;
+                    }
+                    rs ? LoadPage(currentPage) : console.error("error");
                 }
 
                 function changeStatus(tasks) {
